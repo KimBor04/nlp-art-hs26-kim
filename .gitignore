@@ -1,0 +1,8 @@
+# Generated project artifacts
+project1/artifacts/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Weights & Biases
+wandb/
