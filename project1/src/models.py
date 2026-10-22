@@ -22,7 +22,7 @@ class EmbeddingMLP(nn.Module):
             nn.Linear(hidden_dim, 2)
         )
 
-    def forward(self, input_ids):
+    def forward(self, input_ids, lengths=None):
 
         # [batch_size, seq_len, embedding_dim]
         embeddings = self.embedding(input_ids)
@@ -31,11 +31,27 @@ class EmbeddingMLP(nn.Module):
         sep_mask = input_ids == self.sep_id
         segment_ids = sep_mask.long().cumsum(dim=1)
 
+        
         # Ignore padding and separators
         valid_mask = (
             (input_ids != self.pad_id) &
             (input_ids != self.sep_id)
         )
+
+        # Also respect original sequence lengths
+        if lengths is not None:
+            positions = torch.arange(
+                input_ids.size(1),
+                device=input_ids.device
+            ).unsqueeze(0)
+
+            length_mask = (
+                positions <
+                lengths.to(input_ids.device).unsqueeze(1)
+            )
+
+            valid_mask = valid_mask & length_mask
+
 
         segment_vectors = []
 

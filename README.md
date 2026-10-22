@@ -269,3 +269,28 @@ Planned tracked metrics include:
 Upcoming experiments will compare learning rates, hidden dimensions, batch sizes and model architectures.
 
 Final model comparisons and the saved W&B workspace link will be added after training.
+
+### MLP Baseline – 200-Epoch Diagnostic Experiment
+
+Configuration:
+- Pretrained fastText embeddings (frozen)
+- Hidden dimension: 128
+- Learning rate: 0.001
+- Batch size: 32
+- Optimizer: Adam
+- Seed: 42
+- Maximum epochs: 200
+- Early stopping: disabled
+
+Results:
+- Best validation accuracy: 62.70% (epoch 47)
+- Lowest validation loss: 0.6439 (epoch 14)
+- Training accuracy at epoch 200: 100%
+- Validation accuracy at epoch 200: 59.40%
+
+The experiment demonstrated substantial overfitting.
+Training accuracy continued to improve while validation
+accuracy stagnated and validation loss increased.
+
+Future experiments will use early stopping and investigate
+regularization and hyperparameter tuning.

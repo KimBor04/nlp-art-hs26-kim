@@ -9,13 +9,14 @@ def train_one_epoch(model, dataloader, optimizer, criterion, device):
 
     for batch in dataloader:
         input_ids = batch["input_ids"].to(device)
+        lengths = batch["lengths"]
         labels = batch["labels"].to(device)
 
         # Reset gradients
         optimizer.zero_grad()
 
         # Forward pass
-        logits = model(input_ids)
+        logits = model(input_ids, lengths=lengths)
         loss = criterion(logits, labels)
 
         # Backward pass
@@ -45,10 +46,11 @@ def evaluate(model, dataloader, criterion, device):
     with torch.no_grad():
         for batch in dataloader:
             input_ids = batch["input_ids"].to(device)
+            lengths = batch["lengths"]
             labels = batch["labels"].to(device)
 
             # Forward pass only
-            logits = model(input_ids)
+            logits = model(input_ids, lengths=lengths)
             loss = criterion(logits, labels)
 
             # Track metrics
