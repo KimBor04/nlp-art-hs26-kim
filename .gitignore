@@ -6,3 +6,11 @@ project1/artifacts/
 
 # Weights & Biases
 wandb/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Generated model artifacts
+artifacts/
+*.pt
