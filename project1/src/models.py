@@ -4,7 +4,14 @@ import torch.nn as nn
 
 
 class EmbeddingMLP(nn.Module):
-    def __init__(self, embedding_layer, pad_id, sep_id, hidden_dim=128):
+    def __init__(
+        self,
+        embedding_layer,
+        pad_id,
+        sep_id,
+        hidden_dim=128,
+        dropout=0.0
+    ):
         super().__init__()
 
         # Pretrained frozen embeddings
@@ -14,13 +21,17 @@ class EmbeddingMLP(nn.Module):
         self.sep_id = sep_id
 
         embedding_dim = embedding_layer.embedding_dim
-
-        # Two-layer classifier
+        
+        # Two-layer classifier with configurable dropout
         self.classifier = nn.Sequential(
             nn.Linear(4 * embedding_dim, hidden_dim),
-            nn.ReLU(),
+            nn.Sequential(
+                nn.ReLU(),
+                nn.Dropout(p=dropout)
+            ),
             nn.Linear(hidden_dim, 2)
         )
+
 
     def forward(self, input_ids, lengths=None):
 

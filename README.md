@@ -182,6 +182,43 @@ An important limitation of mean pooling is that word order is not preserved.
 
 The baseline implementation is part of the current project. Final results using the updated preprocessing pipeline are not yet documented here.
 
+### MLP Hyperparameter Experiments
+
+The MLP was optimized using the validation split only.
+
+The experiments compared learning rates, dropout,
+optimizer choice, and weight decay.
+
+**Selected configuration:**
+- Learning rate: 0.0003
+- Hidden dimension: 128
+- Batch size: 32
+- Dropout: 0.2
+- Optimizer: Adam
+- Weight decay: 0
+- Maximum epochs: 90
+- Early stopping patience: 20
+
+**Best individual validation accuracy:** 65.00%
+
+A multi-seed experiment compared dropout settings
+using seeds 42, 123, and 2026.
+
+| Dropout | Mean accuracy | Standard deviation |
+|---|---:|---:|
+| 0.0 | 63.30% | 0.53 pp |
+| 0.2 | 64.53% | 0.72 pp |
+
+Dropout 0.2 performed better in two of three seeds,
+improving mean validation accuracy by 1.23 percentage
+points.
+
+The MLP continued to overfit during longer training.
+However, regularization improved validation performance.
+
+All reported results are validation results.
+The test split has not been used for model selection.
+
 ### Architecture 2 – fastText + RNN
 
 The second architecture will use:
