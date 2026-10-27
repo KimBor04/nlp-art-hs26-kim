@@ -1,7 +1,6 @@
-
 import torch
 import torch.nn as nn
-
+from torch.nn.utils.rnn import pack_padded_sequence
 
 class EmbeddingMLP(nn.Module):
     def __init__(
@@ -85,5 +84,83 @@ class EmbeddingMLP(nn.Module):
 
         # [batch_size, 2]
         logits = self.classifier(x)
+
+        return logits
+
+
+class EmbeddingGRU(nn.Module):
+    """
+    Two-layer GRU for ART classification.
+
+    Uses frozen fastText embeddings and the
+    final hidden state for classification.
+    """
+
+    def __init__(
+        self,
+        embedding_layer,
+        pad_id,
+        hidden_dim=128,
+        num_layers=2,
+        dropout=0.2
+    ):
+        super().__init__()
+
+        # Frozen pretrained embeddings
+        self.embedding = embedding_layer
+        self.embedding.weight.requires_grad_(False)
+
+        self.pad_id = pad_id
+
+        embedding_dim = embedding_layer.embedding_dim
+
+        # Two-layer GRU
+        self.gru = nn.GRU(
+            input_size=embedding_dim,
+            hidden_size=hidden_dim,
+            num_layers=num_layers,
+            batch_first=True,
+            dropout=dropout if num_layers > 1 else 0.0
+        )
+
+        # Two-layer classifier
+        self.classifier = nn.Sequential(
+            nn.Linear(hidden_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Dropout(dropout),
+            nn.Linear(hidden_dim, 2)
+        )
+
+    def forward(self, input_ids, lengths=None):
+
+        if lengths is None:
+            lengths = (
+                input_ids != self.pad_id
+            ).sum(dim=1)
+
+        # Embeddings: [batch, seq_len, 300]
+        embeddings = self.embedding(input_ids)
+
+        # pack_padded_sequence requires CPU lengths
+        lengths_cpu = lengths.detach().to(
+            device="cpu",
+            dtype=torch.long
+        )
+
+        packed = pack_padded_sequence(
+            embeddings,
+            lengths_cpu,
+            batch_first=True,
+            enforce_sorted=False
+        )
+
+        # GRU final hidden states
+        _, hidden = self.gru(packed)
+
+        # Last layer hidden state: [batch, hidden_dim]
+        final_hidden = hidden[-1]
+
+        # Classification logits: [batch, 2]
+        logits = self.classifier(final_hidden)
 
         return logits
