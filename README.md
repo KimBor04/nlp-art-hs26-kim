@@ -228,7 +228,14 @@ jupyter lab
 
 **Reproduction notes:** Several training experiments are computationally expensive and their outputs are saved in the notebooks. Their source cells may be annotated to discourage accidental reruns. Checkpoint-loading cells require the corresponding `.pt` files under `project1/artifacts/`. These generated files are not necessarily stored in Git; use the saved artifacts or rerun the relevant training cells if necessary. W&B tracking requires an authenticated account for new runs.
 
-## 9. Experiment tracking
+## 9. Tools and AI Assistance
+
+This project was implemented in Python using PyTorch for model development and training, pretrained fastText embeddings for word representations, Hugging Face for dataset access, and Weights & Biases for experiment tracking.
+
+AI Assistance:
+- ChatGPT (OpenAI): Used to explain NLP concepts, support code understanding and debugging, discuss model architectures and experimental results, and assist with documentation and presentation preparation.
+
+## 10. Experiment tracking
 
 Training configurations, metrics, checkpoint references, and experiment comparisons are logged in the project's W&B workspace:
 
@@ -236,7 +243,7 @@ Training configurations, metrics, checkpoint references, and experiment comparis
 
 Notebook outputs preserve key numerical results independently of the W&B interface.
 
-## 10. Conclusions and limitations
+## 11. Conclusions and limitations
 
 The project implements both required architectures and an additional hypothesis-order-symmetric PairwiseGRU. While the PairwiseGRU improves validation accuracy and resolves most answer-order inconsistency, the Standard GRU performs best in the original official test evaluation.
 
